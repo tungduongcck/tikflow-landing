@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Configuration from User Sandbox
     const TIKTOK_CLIENT_KEY = 'sbawgnns17rw9q3h82';
     const TIKTOK_CLIENT_SECRET = 'bMOetQrBjZpNEZrc4qVElWOZGfvqAvYg';
-    const REDIRECT_URI = 'https://webhook.site/ffb22edf-678e-42df-88d9-d8fc3f8bf134';
+    const REDIRECT_URI = 'https://tikflow-landing.vercel.app/';
 
     const loginBtns = [document.getElementById('login-btn'), document.getElementById('get-started-btn')];
     const landingView = document.getElementById('landing-view');
