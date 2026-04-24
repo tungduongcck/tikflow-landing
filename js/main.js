@@ -467,6 +467,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
+                        post_info: {
+                            privacy_level: "SELF_ONLY"
+                        },
                         source_info: {
                             source: 'FILE_UPLOAD',
                             video_size: selectedVideoFile.size,
