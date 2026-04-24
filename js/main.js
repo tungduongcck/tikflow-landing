@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
                 // REAL AUTHORIZE URL
-                const authUrl = `https://www.tiktok.com/v2/auth/authorize/?client_key=${TIKTOK_CLIENT_KEY}&response_type=code&scope=user.info.basic,user.info.profile,video.list,video.publish&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&state=test`;
+                const authUrl = `https://www.tiktok.com/v2/auth/authorize/?client_key=${TIKTOK_CLIENT_KEY}&response_type=code&scope=user.info.basic,user.info.profile,video.list,video.publish,video.upload&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&state=test`;
                 
                 // REDIRECT TO TIKTOK AUTH PAGE
                 window.location.href = authUrl;
