@@ -37,10 +37,10 @@ document.addEventListener('DOMContentLoaded', () => {
         anchor.addEventListener('click', function (e) {
             const targetId = this.getAttribute('href');
             if (targetId === '#') return;
-            
+
             e.preventDefault();
             const targetElement = document.querySelector(targetId);
-            
+
             if (targetElement) {
                 const headerHeight = document.querySelector('header').offsetHeight;
                 const elementPosition = targetElement.getBoundingClientRect().top;
@@ -69,12 +69,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 1. Handle Login Click
     loginBtns.forEach(btn => {
-        if(btn) {
+        if (btn) {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
                 // REAL AUTHORIZE URL
                 const authUrl = `https://www.tiktok.com/v2/auth/authorize/?client_key=${TIKTOK_CLIENT_KEY}&response_type=code&scope=user.info.basic,user.info.profile,video.list,video.publish,video.upload&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&state=test`;
-                
+
                 // REDIRECT TO TIKTOK AUTH PAGE
                 window.location.href = authUrl;
             });
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. Check URL for ?code= (User returned from TikTok Login)
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');
-    
+
     // --- HELPER FUNCTIONS ---
     async function fetchUserAndVideos(accessToken) {
         // --- B. GET USER INFO ---
@@ -106,9 +106,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('#loading-state p').innerText = "Fetching video list...";
         const videoResponse = await fetch('https://open.tiktokapis.com/v2/video/list/?fields=id,title,video_description,duration,cover_image_url,embed_link,like_count,comment_count,share_count,view_count,create_time', {
             method: 'POST',
-            headers: { 
+            headers: {
                 'Authorization': `Bearer ${accessToken}`,
-                'Content-Type': 'application/json' 
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({ max_count: 20 })
         });
@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     redirect_uri: REDIRECT_URI
                 })
             });
-            
+
             const tokenData = await tokenResponse.json();
             if (!tokenData.access_token) {
                 throw new Error("Failed to get access token. Error: " + JSON.stringify(tokenData));
@@ -240,12 +240,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     refresh_token: refreshToken
                 })
             });
-            
+
             const tokenData = await tokenResponse.json();
             if (!tokenData.access_token) {
                 throw new Error("Failed to refresh token. Error: " + JSON.stringify(tokenData));
             }
-            
+
             accessToken = tokenData.access_token;
             localStorage.setItem('tiktok_access_token', tokenData.access_token);
             if (tokenData.refresh_token) {
@@ -272,7 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
         landingView.style.display = 'none';
         dashboardView.style.display = 'block';
         window.scrollTo(0, 0);
-        
+
         // Show loading state, hide data
         document.getElementById('loading-state').style.display = 'block';
         document.getElementById('dashboard-data').style.display = 'none';
@@ -286,12 +286,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function runMockFlow() {
         document.getElementById('loading-state').style.display = 'none';
         document.getElementById('dashboard-data').style.display = 'block';
-        
+
         document.getElementById('profile-avatar').src = 'https://ui-avatars.com/api/?name=Mai+Tri+Thuc&background=fe2c55&color=fff&size=128';
         document.getElementById('profile-name').innerText = 'Mai Trí Thức';
         document.getElementById('profile-handle').innerText = '@maitrithuc2020';
         document.getElementById('profile-openid').innerText = 'v1.234567890abcdef...';
-        
+
         const videoGrid = document.getElementById('video-grid');
         const mockVideos = [
             { title: 'My awesome video', views: '1.2k', date: '2h ago', cover: 'bg-gradient-1' },
@@ -341,14 +341,14 @@ document.addEventListener('DOMContentLoaded', () => {
     let selectedVideoFile = null;
 
     // Open modal
-    if(uploadBtn) {
+    if (uploadBtn) {
         uploadBtn.addEventListener('click', () => {
             uploadModal.style.display = 'flex';
         });
     }
 
     // Close modal
-    if(closeModal) {
+    if (closeModal) {
         closeModal.addEventListener('click', () => {
             resetUploadModal();
             uploadModal.style.display = 'none';
@@ -356,7 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Click upload area -> trigger file input
-    if(uploadArea) {
+    if (uploadArea) {
         uploadArea.addEventListener('click', (e) => {
             if (e.target.closest('#change-video-btn') || e.target.closest('#video-preview')) return;
             videoFileInput.click();
@@ -364,7 +364,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Change button
-    if(changeVideoBtn) {
+    if (changeVideoBtn) {
         changeVideoBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             videoFileInput.click();
@@ -372,7 +372,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // File selected via input
-    if(videoFileInput) {
+    if (videoFileInput) {
         videoFileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) handleVideoSelected(file);
@@ -380,7 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Drag & Drop
-    if(uploadArea) {
+    if (uploadArea) {
         uploadArea.addEventListener('dragover', (e) => {
             e.preventDefault();
             uploadArea.style.borderColor = 'var(--primary)';
@@ -408,12 +408,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleVideoSelected(file) {
         selectedVideoFile = file;
-        
+
         // Show preview
         const url = URL.createObjectURL(file);
         videoPreview.src = url;
         videoFileName.innerText = `${file.name} (${(file.size / 1024 / 1024).toFixed(1)} MB)`;
-        
+
         uploadPlaceholder.style.display = 'none';
         videoPreviewContainer.style.display = 'block';
         submitVideoBtn.disabled = false;
@@ -437,7 +437,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Publish to TikTok
-    if(submitVideoBtn) {
+    if (submitVideoBtn) {
         submitVideoBtn.addEventListener('click', async () => {
             if (!selectedVideoFile) {
                 alert('Please select a video file first.');
@@ -455,10 +455,28 @@ document.addEventListener('DOMContentLoaded', () => {
             uploadProgress.style.display = 'block';
 
             try {
+                // Step 0: Query Creator Info
+                uploadStatusText.innerText = 'Checking creator info...';
+                uploadProgressBar.style.width = '5%';
+                uploadPercent.innerText = '5%';
+
+                const creatorInfoResponse = await fetch('/api/tiktok-creator-info', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const creatorInfoData = await creatorInfoResponse.json();
+                console.log('Creator Info:', creatorInfoData);
+                if (creatorInfoData.error && creatorInfoData.error.code !== 'ok') {
+                    console.warn('Could not fetch creator info, continuing anyway...', creatorInfoData);
+                }
+
                 // Step 1: Initialize upload via proxy (avoids CORS)
                 uploadStatusText.innerText = 'Initializing upload...';
-                uploadProgressBar.style.width = '10%';
-                uploadPercent.innerText = '10%';
+                uploadProgressBar.style.width = '15%';
+                uploadPercent.innerText = '15%';
 
                 const initResponse = await fetch('/api/tiktok-upload-init', {
                     method: 'POST',
@@ -468,7 +486,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     },
                     body: JSON.stringify({
                         post_info: {
-                            privacy_level: "SELF_ONLY"
+                            title: videoCaption.value || 'Uploaded via TikFlow',
+                            privacy_level: "SELF_ONLY",
+                            disable_duet: false,
+                            disable_comment: false,
+                            disable_stitch: false
                         },
                         source_info: {
                             source: 'FILE_UPLOAD',
@@ -501,6 +523,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const uploadResponse = await fetch('/api/tiktok-upload-video', {
                     method: 'PUT',
                     headers: {
+                        'Authorization': `Bearer ${accessToken}`,
                         'Content-Type': 'video/mp4',
                         'Content-Range': `bytes 0-${selectedVideoFile.size - 1}/${selectedVideoFile.size}`,
                         'x-upload-url': uploadUrl

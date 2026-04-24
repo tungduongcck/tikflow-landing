@@ -8,7 +8,7 @@ export default async function handler(req, res) {
     // CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'PUT, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Content-Range, x-upload-url');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Content-Range, x-upload-url, Authorization');
 
     // Handle preflight
     if (req.method === 'OPTIONS') {
@@ -32,12 +32,18 @@ export default async function handler(req, res) {
         }
         const body = Buffer.concat(chunks);
 
+        const fetchHeaders = {
+            'Content-Type': req.headers['content-type'] || 'video/mp4',
+            'Content-Range': req.headers['content-range'] || '',
+        };
+        
+        if (req.headers['authorization']) {
+            fetchHeaders['Authorization'] = req.headers['authorization'];
+        }
+
         const response = await fetch(uploadUrl, {
             method: 'PUT',
-            headers: {
-                'Content-Type': req.headers['content-type'] || 'video/mp4',
-                'Content-Range': req.headers['content-range'] || '',
-            },
+            headers: fetchHeaders,
             body: body,
         });
 
