@@ -455,12 +455,12 @@ document.addEventListener('DOMContentLoaded', () => {
             uploadProgress.style.display = 'block';
 
             try {
-                // Step 1: Initialize upload via TikTok Content Posting API
+                // Step 1: Initialize upload via proxy (avoids CORS)
                 uploadStatusText.innerText = 'Initializing upload...';
                 uploadProgressBar.style.width = '10%';
                 uploadPercent.innerText = '10%';
 
-                const initResponse = await fetch('https://open.tiktokapis.com/v2/post/publish/inbox/video/init/', {
+                const initResponse = await fetch('/api/tiktok-upload-init', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${accessToken}`,
@@ -490,16 +490,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     throw new Error('No upload URL received from TikTok. Response: ' + JSON.stringify(initData));
                 }
 
-                // Step 2: Upload the video file
+                // Step 2: Upload the video file via proxy (avoids CORS)
                 uploadStatusText.innerText = 'Uploading video...';
                 uploadProgressBar.style.width = '30%';
                 uploadPercent.innerText = '30%';
 
-                const uploadResponse = await fetch(uploadUrl, {
+                const uploadResponse = await fetch('/api/tiktok-upload-video', {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'video/mp4',
-                        'Content-Range': `bytes 0-${selectedVideoFile.size - 1}/${selectedVideoFile.size}`
+                        'Content-Range': `bytes 0-${selectedVideoFile.size - 1}/${selectedVideoFile.size}`,
+                        'x-upload-url': uploadUrl
                     },
                     body: selectedVideoFile
                 });
