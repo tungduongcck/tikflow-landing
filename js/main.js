@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Configuration from User Sandbox
     const TIKTOK_CLIENT_KEY = 'sbawgnns17rw9q3h82';
     const TIKTOK_CLIENT_SECRET = 'bMOetQrBjZpNEZrc4qVElWOZGfvqAvYg';
-    const REDIRECT_URI = 'https://webhook.site/ffb22edf-678e-42df-88d9-d8fc3f8bf134';
+    const REDIRECT_URI = 'https://tikflow-landing.vercel.app/';
 
     const loginBtns = [document.getElementById('login-btn'), document.getElementById('get-started-btn')];
     const landingView = document.getElementById('landing-view');
@@ -85,6 +85,181 @@ document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');
     
+    // --- HELPER FUNCTIONS ---
+    async function fetchUserAndVideos(accessToken) {
+        // --- B. GET USER INFO ---
+        document.querySelector('#loading-state p').innerText = "Fetching user info...";
+        const userInfoResponse = await fetch('https://open.tiktokapis.com/v2/user/info/?fields=open_id,display_name,avatar_url,follower_count', {
+            headers: { 'Authorization': `Bearer ${accessToken}` }
+        });
+        const userData = await userInfoResponse.json();
+        if (!userInfoResponse.ok || (userData.error && userData.error.code !== 'ok')) {
+            throw new Error("unauthorized");
+        }
+        console.log("user", userData);
+        const user = userData.data?.user || {};
+
+        // --- C. GET VIDEO LIST ---
+        document.querySelector('#loading-state p').innerText = "Fetching video list...";
+        const videoResponse = await fetch('https://open.tiktokapis.com/v2/video/list/?fields=id,title,video_description,duration,cover_image_url,embed_link,like_count,comment_count,share_count,view_count,create_time', {
+            method: 'POST',
+            headers: { 
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json' 
+            },
+            body: JSON.stringify({ max_count: 20 })
+        });
+        const videoData = await videoResponse.json();
+        if (!videoResponse.ok || (videoData.error && videoData.error.code !== 'ok')) {
+            throw new Error("unauthorized");
+        }
+        console.log("videos", videoData);
+        const videos = videoData.data?.videos || [];
+
+        return { user, videos };
+    }
+
+    function renderDashboardData(user, videos) {
+        document.getElementById('loading-state').style.display = 'none';
+        document.getElementById('dashboard-data').style.display = 'block';
+
+        document.getElementById('profile-avatar').src = user.avatar_url || 'https://ui-avatars.com/api/?name=User&background=fe2c55&color=fff';
+        document.getElementById('profile-name').innerText = user.display_name || 'TikTok User';
+        document.getElementById('profile-handle').innerText = user.follower_count !== undefined ? `${user.follower_count} Followers` : 'TikTok User';
+        document.getElementById('profile-openid').innerText = user.open_id || 'N/A';
+
+        const videoGrid = document.getElementById('video-grid');
+        if (videos.length === 0) {
+            videoGrid.innerHTML = '<p>No videos found or permission denied.</p>';
+        } else {
+            videoGrid.innerHTML = videos.map(v => `
+                <div class="video-card glass-card">
+                    <div class="video-thumbnail" style="background-image: url('${v.cover_image_url}');"></div>
+                    <div class="video-info">
+                        <h4>${v.title || 'Untitled Video'}</h4>
+                        <p>${v.view_count || 0} Views • ${v.like_count || 0} Likes</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+
+    async function fetchTikTokData(authCode) {
+        try {
+            if (authCode === 'tiktok_mock_code_123') {
+                setTimeout(() => runMockFlow(), 1500);
+                return;
+            }
+
+            // --- A. GET ACCESS TOKEN ---
+            document.querySelector('#loading-state p').innerText = "Exchanging code for token...";
+            const tokenResponse = await fetch('https://open.tiktokapis.com/v2/oauth/token/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({
+                    client_key: TIKTOK_CLIENT_KEY,
+                    client_secret: TIKTOK_CLIENT_SECRET,
+                    code: authCode,
+                    grant_type: 'authorization_code',
+                    redirect_uri: REDIRECT_URI
+                })
+            });
+            
+            const tokenData = await tokenResponse.json();
+            if (!tokenData.access_token) {
+                throw new Error("Failed to get access token. Error: " + JSON.stringify(tokenData));
+            }
+            const accessToken = tokenData.access_token;
+            localStorage.setItem('tiktok_access_token', tokenData.access_token);
+            if (tokenData.refresh_token) {
+                localStorage.setItem('tiktok_refresh_token', tokenData.refresh_token);
+            }
+
+            const { user, videos } = await fetchUserAndVideos(accessToken);
+            renderDashboardData(user, videos);
+
+        } catch (error) {
+            console.error(error);
+            alert('Error fetching from TikTok API. (Note: Browsers often block these requests due to CORS. See console for details.)\n\n' + error.message);
+            document.getElementById('loading-state').innerHTML = `<p style="color:#fe2c55;">API Error: ${error.message}</p><button class="btn btn-outline" onclick="window.location.href=window.location.pathname">Go Back</button>`;
+        }
+    }
+
+    async function handleReloadData() {
+        let accessToken = localStorage.getItem('tiktok_access_token');
+        const refreshToken = localStorage.getItem('tiktok_refresh_token');
+
+        if (!accessToken && !refreshToken) {
+            alert('No saved tokens found. Please login first.');
+            return;
+        }
+
+        // Show loading
+        landingView.style.display = 'none';
+        dashboardView.style.display = 'block';
+        window.scrollTo(0, 0);
+
+        document.getElementById('dashboard-data').style.display = 'none';
+        document.getElementById('loading-state').style.display = 'block';
+        document.querySelector('#loading-state p').innerText = "Reloading data...";
+
+        try {
+            if (accessToken) {
+                try {
+                    const { user, videos } = await fetchUserAndVideos(accessToken);
+                    renderDashboardData(user, videos);
+                    return; // Successfully fetched, exit function
+                } catch (e) {
+                    if (e.message !== "unauthorized") {
+                        throw e;
+                    }
+                    console.log("Access token likely expired, trying refresh...");
+                }
+            }
+
+            if (!refreshToken) {
+                throw new Error("Access token expired and no refresh token available.");
+            }
+
+            // Refresh token
+            document.querySelector('#loading-state p').innerText = "Refreshing token...";
+            const tokenResponse = await fetch('https://open.tiktokapis.com/v2/oauth/token/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({
+                    client_key: TIKTOK_CLIENT_KEY,
+                    client_secret: TIKTOK_CLIENT_SECRET,
+                    grant_type: 'refresh_token',
+                    refresh_token: refreshToken
+                })
+            });
+            
+            const tokenData = await tokenResponse.json();
+            if (!tokenData.access_token) {
+                throw new Error("Failed to refresh token. Error: " + JSON.stringify(tokenData));
+            }
+            
+            accessToken = tokenData.access_token;
+            localStorage.setItem('tiktok_access_token', tokenData.access_token);
+            if (tokenData.refresh_token) {
+                localStorage.setItem('tiktok_refresh_token', tokenData.refresh_token);
+            }
+
+            const { user, videos } = await fetchUserAndVideos(accessToken);
+            renderDashboardData(user, videos);
+
+        } catch (error) {
+            console.error(error);
+            alert('Error reloading data: ' + error.message);
+            document.getElementById('loading-state').innerHTML = `<p style="color:#fe2c55;">API Error: ${error.message}</p><button class="btn btn-outline" onclick="window.location.href=window.location.pathname">Go Back</button>`;
+        }
+    }
+
+    const reloadDataBtn = document.getElementById('reload-data-btn');
+    if (reloadDataBtn) {
+        reloadDataBtn.addEventListener('click', handleReloadData);
+    }
+
     if (code) {
         // Hide Landing, Show Dashboard
         landingView.style.display = 'none';
@@ -95,89 +270,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('loading-state').style.display = 'block';
         document.getElementById('dashboard-data').style.display = 'none';
 
-        // REAL API FETCH FUNCTION
-        async function fetchTikTokData(authCode) {
-            try {
-                if (authCode === 'tiktok_mock_code_123') {
-                    // Fallback to Mock if no real code provided
-                    setTimeout(() => runMockFlow(), 1500);
-                    return;
-                }
-
-                // --- A. GET ACCESS TOKEN ---
-                document.querySelector('#loading-state p').innerText = "Exchanging code for token...";
-                const tokenResponse = await fetch('https://open.tiktokapis.com/v2/oauth/token/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams({
-                        client_key: TIKTOK_CLIENT_KEY,
-                        client_secret: TIKTOK_CLIENT_SECRET,
-                        code: authCode,
-                        grant_type: 'authorization_code',
-                        redirect_uri: REDIRECT_URI
-                    })
-                });
-                
-                const tokenData = await tokenResponse.json();
-                if (!tokenData.access_token) {
-                    throw new Error("Failed to get access token. Error: " + JSON.stringify(tokenData));
-                }
-                const accessToken = tokenData.access_token;
-
-                // --- B. GET USER INFO ---
-                document.querySelector('#loading-state p').innerText = "Fetching user info...";
-                const userInfoResponse = await fetch('https://open.tiktokapis.com/v2/user/info/?fields=open_id,display_name,avatar_url,follower_count', {
-                    headers: { 'Authorization': `Bearer ${accessToken}` }
-                });
-                const userData = await userInfoResponse.json();
-                const user = userData.data?.user || {};
-
-                // --- C. GET VIDEO LIST ---
-                document.querySelector('#loading-state p').innerText = "Fetching video list...";
-                const videoResponse = await fetch('https://open.tiktokapis.com/v2/video/list/?fields=id,title,video_description,duration,cover_image_url,embed_link,like_count,comment_count,share_count,view_count,create_time', {
-                    method: 'POST',
-                    headers: { 
-                        'Authorization': `Bearer ${accessToken}`,
-                        'Content-Type': 'application/json' 
-                    },
-                    body: JSON.stringify({ max_count: 20 })
-                });
-                const videoData = await videoResponse.json();
-                const videos = videoData.data?.videos || [];
-
-                // --- POPULATE UI ---
-                document.getElementById('loading-state').style.display = 'none';
-                document.getElementById('dashboard-data').style.display = 'block';
-
-                document.getElementById('profile-avatar').src = user.avatar_url || 'https://ui-avatars.com/api/?name=User&background=fe2c55&color=fff';
-                document.getElementById('profile-name').innerText = user.display_name || 'TikTok User';
-                document.getElementById('profile-handle').innerText = user.follower_count !== undefined ? `${user.follower_count} Followers` : 'TikTok User';
-                document.getElementById('profile-openid').innerText = user.open_id || 'N/A';
-
-                const videoGrid = document.getElementById('video-grid');
-                if (videos.length === 0) {
-                    videoGrid.innerHTML = '<p>No videos found or permission denied.</p>';
-                } else {
-                    videoGrid.innerHTML = videos.map(v => `
-                        <div class="video-card glass-card">
-                            <div class="video-thumbnail" style="background-image: url('${v.cover_image_url}');"></div>
-                            <div class="video-info">
-                                <h4>${v.title || 'Untitled Video'}</h4>
-                                <p>${v.view_count || 0} Views • ${v.like_count || 0} Likes</p>
-                            </div>
-                        </div>
-                    `).join('');
-                }
-
-            } catch (error) {
-                console.error(error);
-                alert('Error fetching from TikTok API. (Note: Browsers often block these requests due to CORS. See console for details.)\n\n' + error.message);
-                document.getElementById('loading-state').innerHTML = `<p style="color:#fe2c55;">API Error: ${error.message}</p><button class="btn btn-outline" onclick="window.location.href=window.location.pathname">Go Back</button>`;
-            }
-        }
-
         // Execute
         fetchTikTokData(code);
+    } else if (localStorage.getItem('tiktok_access_token') || localStorage.getItem('tiktok_refresh_token')) {
+        handleReloadData();
     }
 
     function runMockFlow() {
@@ -211,6 +307,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('tiktok_access_token');
+            localStorage.removeItem('tiktok_refresh_token');
             window.location.href = window.location.pathname; // Reload without code
         });
     }
