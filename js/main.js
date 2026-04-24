@@ -320,32 +320,216 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 4. Modal Logic
+    // 4. Upload Modal Logic
     const uploadBtn = document.getElementById('upload-btn');
     const uploadModal = document.getElementById('upload-modal');
     const closeModal = document.getElementById('close-modal');
     const submitVideoBtn = document.getElementById('submit-video-btn');
+    const uploadArea = document.getElementById('upload-area');
+    const videoFileInput = document.getElementById('video-file-input');
+    const uploadPlaceholder = document.getElementById('upload-placeholder');
+    const videoPreviewContainer = document.getElementById('video-preview-container');
+    const videoPreview = document.getElementById('video-preview');
+    const videoFileName = document.getElementById('video-file-name');
+    const changeVideoBtn = document.getElementById('change-video-btn');
+    const videoCaption = document.getElementById('video-caption');
+    const uploadProgress = document.getElementById('upload-progress');
+    const uploadStatusText = document.getElementById('upload-status-text');
+    const uploadPercent = document.getElementById('upload-percent');
+    const uploadProgressBar = document.getElementById('upload-progress-bar');
 
+    let selectedVideoFile = null;
+
+    // Open modal
     if(uploadBtn) {
         uploadBtn.addEventListener('click', () => {
             uploadModal.style.display = 'flex';
         });
     }
 
+    // Close modal
     if(closeModal) {
         closeModal.addEventListener('click', () => {
+            resetUploadModal();
             uploadModal.style.display = 'none';
         });
     }
 
+    // Click upload area -> trigger file input
+    if(uploadArea) {
+        uploadArea.addEventListener('click', (e) => {
+            if (e.target.closest('#change-video-btn') || e.target.closest('#video-preview')) return;
+            videoFileInput.click();
+        });
+    }
+
+    // Change button
+    if(changeVideoBtn) {
+        changeVideoBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            videoFileInput.click();
+        });
+    }
+
+    // File selected via input
+    if(videoFileInput) {
+        videoFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) handleVideoSelected(file);
+        });
+    }
+
+    // Drag & Drop
+    if(uploadArea) {
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = 'var(--primary)';
+            uploadArea.style.background = 'rgba(254, 44, 85, 0.08)';
+        });
+
+        uploadArea.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '';
+            uploadArea.style.background = '';
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '';
+            uploadArea.style.background = '';
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('video/')) {
+                handleVideoSelected(file);
+            } else {
+                alert('Please select a video file (MP4, WebM, etc.)');
+            }
+        });
+    }
+
+    function handleVideoSelected(file) {
+        selectedVideoFile = file;
+        
+        // Show preview
+        const url = URL.createObjectURL(file);
+        videoPreview.src = url;
+        videoFileName.innerText = `${file.name} (${(file.size / 1024 / 1024).toFixed(1)} MB)`;
+        
+        uploadPlaceholder.style.display = 'none';
+        videoPreviewContainer.style.display = 'block';
+        submitVideoBtn.disabled = false;
+    }
+
+    function resetUploadModal() {
+        selectedVideoFile = null;
+        videoFileInput.value = '';
+        if (videoPreview.src) {
+            URL.revokeObjectURL(videoPreview.src);
+            videoPreview.src = '';
+        }
+        uploadPlaceholder.style.display = 'block';
+        videoPreviewContainer.style.display = 'none';
+        videoCaption.value = '';
+        uploadProgress.style.display = 'none';
+        uploadProgressBar.style.width = '0%';
+        uploadPercent.innerText = '0%';
+        submitVideoBtn.disabled = true;
+        submitVideoBtn.innerText = 'Publish to TikTok';
+    }
+
+    // Publish to TikTok
     if(submitVideoBtn) {
-        submitVideoBtn.addEventListener('click', () => {
+        submitVideoBtn.addEventListener('click', async () => {
+            if (!selectedVideoFile) {
+                alert('Please select a video file first.');
+                return;
+            }
+
+            const accessToken = localStorage.getItem('tiktok_access_token');
+            if (!accessToken) {
+                alert('You must be logged in to upload. Please login with TikTok first.');
+                return;
+            }
+
+            submitVideoBtn.disabled = true;
             submitVideoBtn.innerText = 'Publishing...';
-            setTimeout(() => {
-                alert('Video published successfully to TikTok!');
-                uploadModal.style.display = 'none';
-                submitVideoBtn.innerText = 'Publish to TikTok';
-            }, 1500);
+            uploadProgress.style.display = 'block';
+
+            try {
+                // Step 1: Initialize upload via TikTok Content Posting API
+                uploadStatusText.innerText = 'Initializing upload...';
+                uploadProgressBar.style.width = '10%';
+                uploadPercent.innerText = '10%';
+
+                const initResponse = await fetch('https://open.tiktokapis.com/v2/post/publish/inbox/video/init/', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        source_info: {
+                            source: 'FILE_UPLOAD',
+                            video_size: selectedVideoFile.size,
+                            chunk_size: selectedVideoFile.size,
+                            total_chunk_count: 1
+                        }
+                    })
+                });
+
+                const initData = await initResponse.json();
+                console.log('Upload init response:', initData);
+
+                if (initData.error && initData.error.code !== 'ok') {
+                    throw new Error(initData.error.message || initData.error.code || 'Failed to initialize upload');
+                }
+
+                const uploadUrl = initData.data?.upload_url;
+                const publishId = initData.data?.publish_id;
+
+                if (!uploadUrl) {
+                    throw new Error('No upload URL received from TikTok. Response: ' + JSON.stringify(initData));
+                }
+
+                // Step 2: Upload the video file
+                uploadStatusText.innerText = 'Uploading video...';
+                uploadProgressBar.style.width = '30%';
+                uploadPercent.innerText = '30%';
+
+                const uploadResponse = await fetch(uploadUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'video/mp4',
+                        'Content-Range': `bytes 0-${selectedVideoFile.size - 1}/${selectedVideoFile.size}`
+                    },
+                    body: selectedVideoFile
+                });
+
+                console.log('Upload response status:', uploadResponse.status);
+
+                uploadProgressBar.style.width = '80%';
+                uploadPercent.innerText = '80%';
+                uploadStatusText.innerText = 'Processing...';
+
+                // Step 3: Done
+                uploadProgressBar.style.width = '100%';
+                uploadPercent.innerText = '100%';
+                uploadStatusText.innerText = 'Upload complete!';
+
+                setTimeout(() => {
+                    alert('✅ Video uploaded successfully to TikTok! It will appear in your TikTok inbox for review.');
+                    resetUploadModal();
+                    uploadModal.style.display = 'none';
+                }, 1000);
+
+            } catch (error) {
+                console.error('Upload error:', error);
+                alert('Upload failed: ' + error.message);
+                uploadStatusText.innerText = 'Upload failed';
+                uploadProgressBar.style.width = '0%';
+                uploadPercent.innerText = '0%';
+                submitVideoBtn.disabled = false;
+                submitVideoBtn.innerText = 'Retry Upload';
+            }
         });
     }
 });

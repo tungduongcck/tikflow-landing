@@ -739,3 +739,16 @@ footer {
     font-size: 0.95rem;
     color: var(--text-muted);
 }
+
+/* Disabled Button */
+.btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.upload-area.drag-active {
+    border-color: var(--primary);
+    background: rgba(254, 44, 85, 0.08);
+}
