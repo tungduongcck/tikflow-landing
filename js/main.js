@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function fetchUserAndVideos(accessToken) {
         // --- B. GET USER INFO ---
         document.querySelector('#loading-state p').innerText = "Fetching user info...";
-        const userInfoResponse = await fetch('https://open.tiktokapis.com/v2/user/info/?fields=open_id,display_name,avatar_url,follower_count', {
+        const userInfoResponse = await fetch('https://open.tiktokapis.com/v2/user/info/?fields=open_id,display_name,avatar_url', {
             headers: { 'Authorization': `Bearer ${accessToken}` }
         });
         const userData = await userInfoResponse.json();
