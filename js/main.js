@@ -94,7 +94,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         const userData = await userInfoResponse.json();
         if (!userInfoResponse.ok || (userData.error && userData.error.code !== 'ok')) {
-            throw new Error("unauthorized");
+            const errStr = userData.error ? (userData.error.message || userData.error.code) : `HTTP ${userInfoResponse.status}`;
+            const error = new Error(errStr);
+            error.code = userData.error ? userData.error.code : 'unknown';
+            throw error;
         }
         console.log("user", userData);
         const user = userData.data?.user || {};
@@ -111,7 +114,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         const videoData = await videoResponse.json();
         if (!videoResponse.ok || (videoData.error && videoData.error.code !== 'ok')) {
-            throw new Error("unauthorized");
+            const errStr = videoData.error ? (videoData.error.message || videoData.error.code) : `HTTP ${videoResponse.status}`;
+            const error = new Error(errStr);
+            error.code = videoData.error ? videoData.error.code : 'unknown';
+            throw error;
         }
         console.log("videos", videoData);
         const videos = videoData.data?.videos || [];
@@ -175,6 +181,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem('tiktok_refresh_token', tokenData.refresh_token);
             }
 
+            // Clear the ?code= parameter from the URL to prevent "Authorization code expired" on F5
+            window.history.replaceState({}, document.title, window.location.pathname);
+
             const { user, videos } = await fetchUserAndVideos(accessToken);
             renderDashboardData(user, videos);
 
@@ -210,10 +219,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     renderDashboardData(user, videos);
                     return; // Successfully fetched, exit function
                 } catch (e) {
-                    if (e.message !== "unauthorized") {
-                        throw e;
-                    }
-                    console.log("Access token likely expired, trying refresh...");
+                    console.log("Access token fetch failed, trying refresh...", e);
+                    // Proceed to refresh
                 }
             }
 
