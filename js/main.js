@@ -59,8 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // =========================================================
     // Configuration from User Sandbox
-    const TIKTOK_CLIENT_KEY = 'sbawgnns17rw9q3h82';
-    const TIKTOK_CLIENT_SECRET = 'bMOetQrBjZpNEZrc4qVElWOZGfvqAvYg';
+    const TIKTOK_CLIENT_KEY = 'sbawgnns17rw9q3h82'; 
     const REDIRECT_URI = 'https://tikflow-landing.vercel.app/';
 
     const loginBtns = [document.getElementById('login-btn'), document.getElementById('get-started-btn')];
@@ -157,17 +156,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // --- A. GET ACCESS TOKEN ---
+            // --- A. GET ACCESS TOKEN VIA BACKEND ---
             document.querySelector('#loading-state p').innerText = "Exchanging code for token...";
-            const tokenResponse = await fetch('https://open.tiktokapis.com/v2/oauth/token/', {
+            const tokenResponse = await fetch('/api/tiktok-auth', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams({
-                    client_key: TIKTOK_CLIENT_KEY,
-                    client_secret: TIKTOK_CLIENT_SECRET,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
                     code: authCode,
-                    grant_type: 'authorization_code',
-                    redirect_uri: REDIRECT_URI
+                    grant_type: 'authorization_code'
                 })
             });
 
@@ -228,14 +224,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error("Access token expired and no refresh token available.");
             }
 
-            // Refresh token
+            // Refresh token VIA BACKEND
             document.querySelector('#loading-state p').innerText = "Refreshing token...";
-            const tokenResponse = await fetch('https://open.tiktokapis.com/v2/oauth/token/', {
+            const tokenResponse = await fetch('/api/tiktok-auth', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams({
-                    client_key: TIKTOK_CLIENT_KEY,
-                    client_secret: TIKTOK_CLIENT_SECRET,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
                     grant_type: 'refresh_token',
                     refresh_token: refreshToken
                 })
