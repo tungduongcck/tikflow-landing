@@ -25,7 +25,8 @@
                     <span class="logo-text">TikFlow Dashboard</span>
                 </div>
                 <div class="user-profile">
-                    <img src="https://ui-avatars.com/api/?name=TikTok+User&background=fe2c55&color=fff" alt="Avatar" class="avatar" id="user-avatar">
+                    <img src="https://ui-avatars.com/api/?name=TikTok+User&background=fe2c55&color=fff" alt="Avatar"
+                        class="avatar" id="user-avatar">
                     <span class="username" id="user-name">@tiktok_user</span>
                     <button class="btn btn-outline btn-sm" id="logout-btn">Logout</button>
                 </div>
@@ -71,7 +72,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Upload Modal -->
         <div id="upload-modal" class="modal" style="display: none;">
             <div class="modal-content glass-card">
@@ -87,10 +88,13 @@
                         <p style="font-size: 0.8rem; margin-top: 0.5rem;">MP4, WebM • Max 4GB</p>
                     </div>
                     <div id="video-preview-container" style="display: none;">
-                        <video id="video-preview" controls style="width: 100%; max-height: 300px; border-radius: 8px;"></video>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.8rem;">
+                        <video id="video-preview" controls
+                            style="width: 100%; max-height: 300px; border-radius: 8px;"></video>
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.8rem;">
                             <span id="video-file-name" style="font-size: 0.85rem; color: var(--text-muted);"></span>
-                            <button class="btn btn-outline" id="change-video-btn" style="padding: 0.4rem 1rem; font-size: 0.8rem;">Change</button>
+                            <button class="btn btn-outline" id="change-video-btn"
+                                style="padding: 0.4rem 1rem; font-size: 0.8rem;">Change</button>
                         </div>
                     </div>
                 </div>
@@ -101,8 +105,11 @@
                         <span id="upload-status-text" style="font-size: 0.9rem;">Uploading...</span>
                         <span id="upload-percent" style="font-size: 0.9rem; color: var(--primary);">0%</span>
                     </div>
-                    <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
-                        <div id="upload-progress-bar" style="width: 0%; height: 100%; background: var(--primary-gradient); border-radius: 3px; transition: width 0.3s ease;"></div>
+                    <div
+                        style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
+                        <div id="upload-progress-bar"
+                            style="width: 0%; height: 100%; background: var(--primary-gradient); border-radius: 3px; transition: width 0.3s ease;">
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -115,202 +122,209 @@
     <!-- MAIN LANDING PAGE -->
     <div id="landing-view">
         <header>
-        <nav class="container">
-            <div class="logo">
-                <span class="logo-icon">T</span>
-                <span class="logo-text">TikFlow</span>
-            </div>
-            <ul class="nav-links">
-                <li><a href="#features">Features</a></li>
-                <li><a href="#how-it-works">How it works</a></li>
-                <li><a href="#demo">Demo</a></li>
-                <li><a href="#privacy">Privacy</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-            <a href="#" class="btn btn-secondary" id="login-btn">👉 Login with TikTok</a>
-        </nav>
-    </header>
+            <nav class="container">
+                <div class="logo">
+                    <span class="logo-icon">T</span>
+                    <span class="logo-text">TikFlow</span>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#how-it-works">How it works</a></li>
+                    <li><a href="#demo">Demo</a></li>
+                    <li><a href="#privacy">Privacy</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+                <a href="#" class="btn btn-secondary" id="login-btn">👉 Login with TikTok</a>
+            </nav>
+        </header>
 
-    <main>
-        <!-- 1. HERO SECTION -->
-        <section class="hero" id="home">
-            <div class="container hero-content">
-                <div class="hero-text animate-up">
-                    <span class="badge">Official TikTok API Integration</span>
-                    <h1>Assist users in preparing and <span class="gradient-text">publishing content</span></h1>
-                    <p>A simple tool for creators and marketers to upload, schedule, and publish videos directly to
-                        TikTok using approved developer APIs.</p>
-                    <div class="hero-btns">
-                        <a href="#" class="btn btn-primary" id="get-started-btn">👉 Login with TikTok</a>
-                        <a href="#demo" class="btn btn-outline">Watch Demo</a>
+        <main>
+            <!-- 1. HERO SECTION -->
+            <section class="hero" id="home">
+                <div class="container hero-content">
+                    <div class="hero-text animate-up">
+                        <span class="badge">Official TikTok API Integration</span>
+                        <h1>Assist users in preparing and <span class="gradient-text">publishing content</span></h1>
+                        <p>A simple tool for creators and marketers to upload, schedule, and publish videos directly to
+                            TikTok using approved developer APIs.</p>
+                        <div class="hero-btns">
+                            <a href="#" class="btn btn-primary" id="get-started-btn">👉 Login with TikTok</a>
+                            <a href="#demo" class="btn btn-outline">Watch Demo</a>
+                        </div>
+                    </div>
+                    <div class="hero-visual animate-fade">
+                        <div class="glass-card mockup">
+                            <img src="/image/tikflow_dashboard_mockup_1777079603639.png" alt="TikFlow Dashboard"
+                                id="hero-img" style="width: 100%; height: auto; border-radius: 8px;">
+                        </div>
                     </div>
                 </div>
-                <div class="hero-visual animate-fade">
-                    <div class="glass-card mockup">
-                        <img src="assets/dashboard-mockup.png" alt="TikFlow Dashboard" id="hero-img">
+            </section>
+
+            <!-- 2. WHAT THIS APP DOES -->
+            <section class="features" id="features">
+                <div class="container">
+                    <div class="section-header animate-up">
+                        <h2>What is TikFlow Scheduler?</h2>
+                        <p>TikFlow Scheduler is a lightweight web application designed to help content creators and
+                            marketing teams manage their TikTok publishing workflow.</p>
+                    </div>
+                    <div class="features-grid">
+                        <div class="feature-card glass-card animate-up">
+                            <div class="icon">📁</div>
+                            <h3>Upload Video Content</h3>
+                            <p>Easily upload your video files and manage metadata in one place.</p>
+                        </div>
+                        <div class="feature-card glass-card animate-up">
+                            <div class="icon">📅</div>
+                            <h3>Schedule in Advance</h3>
+                            <p>Plan your content calendar and set the perfect time for your posts.</p>
+                        </div>
+                        <div class="feature-card glass-card animate-up">
+                            <div class="icon">🚀</div>
+                            <h3>Official API Publishing</h3>
+                            <p>Publish videos directly to TikTok via approved Content Posting APIs.</p>
+                        </div>
+                        <div class="feature-card glass-card animate-up">
+                            <div class="icon">📊</div>
+                            <h3>Simple Dashboard</h3>
+                            <p>Manage all your scheduled and published content in a clean interface.</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- 2. WHAT THIS APP DOES -->
-        <section class="features" id="features">
+            <!-- 3. HOW IT WORKS -->
+            <section class="how-it-works" id="how-it-works">
+                <div class="container">
+                    <div class="section-header animate-up">
+                        <h2>How it works</h2>
+                        <p>Our integration follows TikTok's official developer guidelines to ensure a secure and
+                            seamless
+                            experience.</p>
+                    </div>
+                    <div class="steps">
+                        <div class="step animate-left">
+                            <div class="step-num">01</div>
+                            <div class="step-content">
+                                <h3>Connect your TikTok account</h3>
+                                <p>Users securely log in using TikTok Login Kit and authorize access to the necessary
+                                    scopes.</p>
+                            </div>
+                        </div>
+                        <div class="step animate-right">
+                            <div class="step-num">02</div>
+                            <div class="step-content">
+                                <h3>Upload your content</h3>
+                                <p>Users upload video files and add captions, hashtags, and privacy settings within the
+                                    app
+                                    interface.</p>
+                            </div>
+                        </div>
+                        <div class="step animate-left">
+                            <div class="step-num">03</div>
+                            <div class="step-content">
+                                <h3>Schedule or publish</h3>
+                                <p>Users can either publish immediately or schedule posts using TikTok Content Posting
+                                    API.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="step animate-right">
+                            <div class="step-num">04</div>
+                            <div class="step-content">
+                                <h3>Content goes live</h3>
+                                <p>Videos are published directly to the user’s TikTok account through official
+                                    integration
+                                    without manual intervention.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. DEMO SECTION -->
+            <section class="demo" id="demo">
+                <div class="container">
+                    <div class="section-header animate-up">
+                        <h2>Product Demo</h2>
+                        <p>Watch how TikFlow Scheduler integrates with TikTok APIs to help users manage content
+                            efficiently.
+                        </p>
+                    </div>
+                    <div class="demo-container glass-card animate-scale">
+                        <div class="video-placeholder">
+                            <div class="play-btn">▶</div>
+                            <p>Video Demo Placeholder<br><small>(Replace with your Loom/YouTube video)</small></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. DATA & PRIVACY -->
+            <section class="privacy" id="privacy">
+                <div class="container glass-card animate-up">
+                    <h2>Data Usage & Privacy</h2>
+                    <p>TikFlow Scheduler only accesses TikTok data that users explicitly authorize. We prioritize your
+                        privacy and data security.</p>
+
+                    <div class="privacy-grid">
+                        <div class="privacy-item">
+                            <h4>We use data to:</h4>
+                            <ul>
+                                <li>Enable login via TikTok</li>
+                                <li>Upload and publish user content</li>
+                                <li>Provide scheduling functionality</li>
+                            </ul>
+                        </div>
+                        <div class="privacy-item">
+                            <h4>We do NOT:</h4>
+                            <ul>
+                                <li>Sell user data to third parties</li>
+                                <li>Share data with unauthorized parties</li>
+                                <li>Store unnecessary personal information</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="privacy-footer">All data usage complies with TikTok Developer Terms and applicable privacy
+                        regulations.</p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
             <div class="container">
-                <div class="section-header animate-up">
-                    <h2>What is TikFlow Scheduler?</h2>
-                    <p>TikFlow Scheduler is a lightweight web application designed to help content creators and
-                        marketing teams manage their TikTok publishing workflow.</p>
-                </div>
-                <div class="features-grid">
-                    <div class="feature-card glass-card animate-up">
-                        <div class="icon">📁</div>
-                        <h3>Upload Video Content</h3>
-                        <p>Easily upload your video files and manage metadata in one place.</p>
-                    </div>
-                    <div class="feature-card glass-card animate-up">
-                        <div class="icon">📅</div>
-                        <h3>Schedule in Advance</h3>
-                        <p>Plan your content calendar and set the perfect time for your posts.</p>
-                    </div>
-                    <div class="feature-card glass-card animate-up">
-                        <div class="icon">🚀</div>
-                        <h3>Official API Publishing</h3>
-                        <p>Publish videos directly to TikTok via approved Content Posting APIs.</p>
-                    </div>
-                    <div class="feature-card glass-card animate-up">
-                        <div class="icon">📊</div>
-                        <h3>Simple Dashboard</h3>
-                        <p>Manage all your scheduled and published content in a clean interface.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 3. HOW IT WORKS -->
-        <section class="how-it-works" id="how-it-works">
-            <div class="container">
-                <div class="section-header animate-up">
-                    <h2>How it works</h2>
-                    <p>Our integration follows TikTok's official developer guidelines to ensure a secure and seamless
-                        experience.</p>
-                </div>
-                <div class="steps">
-                    <div class="step animate-left">
-                        <div class="step-num">01</div>
-                        <div class="step-content">
-                            <h3>Connect your TikTok account</h3>
-                            <p>Users securely log in using TikTok Login Kit and authorize access to the necessary
-                                scopes.</p>
+                <div class="footer-top">
+                    <div class="footer-about">
+                        <div class="logo">
+                            <span class="logo-icon">T</span>
+                            <span class="logo-text">TikFlow</span>
                         </div>
+                        <p>Supporting creators and businesses in managing TikTok content more efficiently through
+                            official
+                            API tools.</p>
                     </div>
-                    <div class="step animate-right">
-                        <div class="step-num">02</div>
-                        <div class="step-content">
-                            <h3>Upload your content</h3>
-                            <p>Users upload video files and add captions, hashtags, and privacy settings within the app
-                                interface.</p>
-                        </div>
-                    </div>
-                    <div class="step animate-left">
-                        <div class="step-num">03</div>
-                        <div class="step-content">
-                            <h3>Schedule or publish</h3>
-                            <p>Users can either publish immediately or schedule posts using TikTok Content Posting API.
-                            </p>
-                        </div>
-                    </div>
-                    <div class="step animate-right">
-                        <div class="step-num">04</div>
-                        <div class="step-content">
-                            <h3>Content goes live</h3>
-                            <p>Videos are published directly to the user’s TikTok account through official integration
-                                without manual intervention.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 4. DEMO SECTION -->
-        <section class="demo" id="demo">
-            <div class="container">
-                <div class="section-header animate-up">
-                    <h2>Product Demo</h2>
-                    <p>Watch how TikFlow Scheduler integrates with TikTok APIs to help users manage content efficiently.
-                    </p>
-                </div>
-                <div class="demo-container glass-card animate-scale">
-                    <div class="video-placeholder">
-                        <div class="play-btn">▶</div>
-                        <p>Video Demo Placeholder<br><small>(Replace with your Loom/YouTube video)</small></p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 5. DATA & PRIVACY -->
-        <section class="privacy" id="privacy">
-            <div class="container glass-card animate-up">
-                <h2>Data Usage & Privacy</h2>
-                <p>TikFlow Scheduler only accesses TikTok data that users explicitly authorize. We prioritize your
-                    privacy and data security.</p>
-
-                <div class="privacy-grid">
-                    <div class="privacy-item">
-                        <h4>We use data to:</h4>
+                    <div class="footer-links">
+                        <h4>Legal</h4>
                         <ul>
-                            <li>Enable login via TikTok</li>
-                            <li>Upload and publish user content</li>
-                            <li>Provide scheduling functionality</li>
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Terms of Service</a></li>
                         </ul>
                     </div>
-                    <div class="privacy-item">
-                        <h4>We do NOT:</h4>
-                        <ul>
-                            <li>Sell user data to third parties</li>
-                            <li>Share data with unauthorized parties</li>
-                            <li>Store unnecessary personal information</li>
-                        </ul>
+                    <div class="footer-contact" id="contact">
+                        <h4>Contact Us</h4>
+                        <p>Email: <a href="mailto:tungduongcck2024@gmail.com">tungduongcck2024@gmail.com</a></p>
+                        <div class="social-links">
+                            <a href="#">LinkedIn</a>
+                            <a href="#">Portfolio</a>
+                        </div>
                     </div>
                 </div>
-                <p class="privacy-footer">All data usage complies with TikTok Developer Terms and applicable privacy
-                    regulations.</p>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <div class="container">
-            <div class="footer-top">
-                <div class="footer-about">
-                    <div class="logo">
-                        <span class="logo-icon">T</span>
-                        <span class="logo-text">TikFlow</span>
-                    </div>
-                    <p>Supporting creators and businesses in managing TikTok content more efficiently through official
-                        API tools.</p>
-                </div>
-                <div class="footer-links">
-                    <h4>Legal</h4>
-                    <ul>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms of Service</a></li>
-                    </ul>
-                </div>
-                <div class="footer-contact" id="contact">
-                    <h4>Contact Us</h4>
-                    <p>Email: <a href="mailto:tungduongcck2024@gmail.com">tungduongcck2024@gmail.com</a></p>
-                    <div class="social-links">
-                        <a href="#">LinkedIn</a>
-                        <a href="#">Portfolio</a>
-                    </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2024 TikFlow Scheduler. All rights reserved. Not affiliated with TikTok Inc.</p>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 TikFlow Scheduler. All rights reserved. Not affiliated with TikTok Inc.</p>
-            </div>
-        </div>
-    </footer>
+        </footer>
     </div>
 
     <script src="js/main.js"></script>
